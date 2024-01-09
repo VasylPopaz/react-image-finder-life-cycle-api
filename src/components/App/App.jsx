@@ -31,7 +31,7 @@ export class App extends Component {
             const { hits, totalHits } = await getPhotos(query, page);
 
             if (!hits.length) {
-              this.setState({ images: [] });
+              this.setState({ images: [], showLoadMore: false });
               return toast.warning(
                 'Sorry, there are no images matching your search query. Please try again.'
               );
