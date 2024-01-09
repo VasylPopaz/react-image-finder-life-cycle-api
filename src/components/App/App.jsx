@@ -75,7 +75,7 @@ export class App extends Component {
           }
           setTimeout(() => {
             window.scrollBy({
-              top: window.innerHeight * 0.85,
+              top: window.innerHeight * 0.8,
               behavior: 'smooth',
             });
           }, 400);
