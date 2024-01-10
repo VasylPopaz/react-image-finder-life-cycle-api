@@ -25,21 +25,18 @@ export class App extends Component {
       });
 
       try {
-        const { hits, totalHits } = await getPhotos(query, page);
+        const { data } = await getPhotos(query, page);
+        const { results, total, total_pages } = data;
+        const isMorePhotos = page < total_pages;
 
-        if (!hits.length) {
-          this.setState({ showLoadMore: false });
+        if (!total) {
           return toast.warning(
             'Sorry, there are no images matching your search query. Please try again.'
           );
         }
 
-        this.setState({
-          showLoadMore: true,
-        });
-
         if (page === 1) {
-          toast.success(`Hurray! We found ${totalHits} images.`);
+          toast.success(`Hurray! We found ${total} images.`);
         } else {
           setTimeout(() => {
             window.scrollBy({
@@ -50,20 +47,14 @@ export class App extends Component {
         }
 
         this.setState(prevState => ({
-          images: [...prevState.images, ...hits],
+          images: [...prevState.images, ...results],
+          showLoadMore: isMorePhotos,
         }));
 
-        if (page >= Math.ceil(totalHits / 12)) {
+        if (!isMorePhotos) {
           toast.info(
             `We're sorry, but you've reached the end of search results.`
           );
-          this.setState({
-            showLoadMore: false,
-          });
-        } else {
-          this.setState({
-            showLoadMore: true,
-          });
         }
       } catch (error) {
         toast.error('Sorry, something went wrong. Please try again.');
@@ -81,6 +72,7 @@ export class App extends Component {
       query: searchQuery,
       page: 1,
       imageUrl: '',
+      showLoadMore: false,
     });
   };
 
@@ -112,7 +104,7 @@ export class App extends Component {
           ? !isLoading && <Button onClick={this.handleLoadMoreClick} />
           : null}
         {showModal && <Modal onClose={this.toggleModal} url={imageUrl} />}
-        <ToastContainer />
+        <ToastContainer autoClose={2000} />
       </Container>
     );
   }
