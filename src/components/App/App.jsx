@@ -4,7 +4,6 @@ import { getPhotos } from 'helpers/api';
 import { Container } from './App.styled';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { checkMorePhotos } from 'helpers/checkMorePhotos';
 
 export class App extends Component {
   state = {
@@ -17,81 +16,68 @@ export class App extends Component {
     showLoadMore: false,
   };
 
-  componentDidUpdate(_, prevState) {
+  async componentDidUpdate(_, prevState) {
     const { query, page } = this.state;
 
-    if (prevState.query !== query) {
-      this.setState(
-        {
-          isLoading: true,
-          images: [],
-        },
-        async () => {
-          try {
-            const { hits, totalHits } = await getPhotos(query, page);
+    if (prevState.query !== query || prevState.page !== page) {
+      this.setState({
+        isLoading: true,
+      });
 
-            if (!hits.length) {
-              this.setState({ images: [], showLoadMore: false });
-              return toast.warning(
-                'Sorry, there are no images matching your search query. Please try again.'
-              );
-            }
+      try {
+        const { hits, totalHits } = await getPhotos(query, page);
 
-            this.setState(prevState => ({
-              showLoadMore: !prevState.showLoadMore,
-            }));
-            toast.success(`Hurray! We found ${totalHits} images.`);
-            this.setState({ images: [...hits] });
-            checkMorePhotos(page, totalHits)
-              ? this.setState({
-                  showLoadMore: true,
-                })
-              : this.setState({
-                  showLoadMore: false,
-                });
-          } catch (error) {
-            toast.error('Sorry, something went wrong. Please try again.');
-            console.log(error.name);
-            console.log(error.message);
-          } finally {
-            this.setState({ isLoading: false });
-          }
+        if (!hits.length) {
+          this.setState({ showLoadMore: false });
+          return toast.warning(
+            'Sorry, there are no images matching your search query. Please try again.'
+          );
         }
-      );
-    }
 
-    if (prevState.page < page) {
-      this.setState({ isLoading: true }, async () => {
-        try {
-          const { hits, totalHits } = await getPhotos(query, page);
-          this.setState(prevState => ({
-            images: [...prevState.images, ...hits],
-          }));
+        this.setState({
+          showLoadMore: true,
+        });
 
-          if (!checkMorePhotos(page, totalHits)) {
-            this.setState(prevState => ({
-              showLoadMore: !prevState.showLoadMore,
-            }));
-          }
+        if (page === 1) {
+          toast.success(`Hurray! We found ${totalHits} images.`);
+        } else {
           setTimeout(() => {
             window.scrollBy({
               top: window.innerHeight * 0.8,
               behavior: 'smooth',
             });
           }, 400);
-        } catch (error) {
-          toast.error('Sorry, something went wrong. Please try again.');
-          console.log(error.name);
-          console.log(error.message);
-        } finally {
-          this.setState({ isLoading: false });
         }
-      });
+
+        this.setState(prevState => ({
+          images: [...prevState.images, ...hits],
+        }));
+
+        if (page >= Math.ceil(totalHits / 12)) {
+          toast.info(
+            `We're sorry, but you've reached the end of search results.`
+          );
+          this.setState({
+            showLoadMore: false,
+          });
+        } else {
+          this.setState({
+            showLoadMore: true,
+          });
+        }
+      } catch (error) {
+        toast.error('Sorry, something went wrong. Please try again.');
+        console.log(error.name);
+        console.log(error.message);
+      } finally {
+        this.setState({ isLoading: false });
+      }
     }
   }
 
   handleSubmit = searchQuery => {
     this.setState({
+      images: [],
       query: searchQuery,
       page: 1,
       imageUrl: '',
