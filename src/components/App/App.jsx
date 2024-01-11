@@ -25,8 +25,7 @@ export class App extends Component {
       });
 
       try {
-        const { data } = await getPhotos(query, page);
-        const { results, total, total_pages } = data;
+        const { results, total, total_pages } = await getPhotos(query, page);
         const isMorePhotos = page < total_pages;
 
         if (!total) {

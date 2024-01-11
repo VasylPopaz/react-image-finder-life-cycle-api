@@ -12,6 +12,6 @@ export async function getPhotos(query, page) {
     },
   };
 
-  const data = await axios(config);
+  const { data } = await axios(config);
   return data;
 }
