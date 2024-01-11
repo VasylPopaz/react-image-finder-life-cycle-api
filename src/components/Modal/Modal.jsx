@@ -1,12 +1,6 @@
 import React, { Component } from 'react';
 import { createPortal } from 'react-dom';
-import {
-  ButtonList,
-  ModalBackdrop,
-  ModalContent,
-  NextButton,
-  PrevButton,
-} from './Modal.styled';
+import { ButtonList, ModalBackdrop, ModalContent } from './Modal.styled';
 
 const modalRoot = document.querySelector('#modal-root');
 
