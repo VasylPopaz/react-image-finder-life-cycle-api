@@ -9,6 +9,7 @@ export class App extends Component {
   state = {
     images: [],
     imageUrl: '',
+    modalContent: null,
     query: '',
     page: 1,
     isLoading: false,
@@ -80,8 +81,8 @@ export class App extends Component {
     this.setState(prevState => ({ showModal: !prevState.showModal }));
   };
 
-  handleImgClick = url => {
-    this.setState({ imageUrl: url });
+  handleImgClick = content => {
+    this.setState({ modalContent: content });
     this.toggleModal();
   };
 
@@ -90,9 +91,29 @@ export class App extends Component {
       page: prevState.page + 1,
     }));
   };
+  
+  handleNextPhoto = id => {
+    const { images } = this.state;
+    const imageId = this.state.images.findIndex(img => img.id === id);
+
+    if (imageId === images.length - 1)
+      return this.setState({ modalContent: images[0] });
+    this.setState({ modalContent: images[imageId + 1] });
+  };
+
+  handlePrevPhoto = id => {
+    const { images } = this.state;
+    const imageId = this.state.images.findIndex(img => img.id === id);
+
+    if (!imageId)
+      return this.setState({ modalContent: images[images.length - 1] });
+    this.setState({ modalContent: images[imageId - 1] });
+  };
 
   render() {
-    const { images, isLoading, showModal, showLoadMore, imageUrl } = this.state;
+    const { images, isLoading, showModal, showLoadMore, modalContent } =
+      this.state;
+
     return (
       <Container>
         <Searchbar onSubmit={this.handleSubmit} />
@@ -103,7 +124,14 @@ export class App extends Component {
         {showLoadMore
           ? !isLoading && <Button onClick={this.handleLoadMoreClick} />
           : null}
-        {showModal && <Modal onClose={this.toggleModal} url={imageUrl} />}
+        {showModal && (
+          <Modal
+            onClose={this.toggleModal}
+            handleNextPhoto={() => this.handleNextPhoto(modalContent.id)}
+            handlePrevPhoto={() => this.handlePrevPhoto(modalContent.id)}
+            modalContent={modalContent}
+          />
+        )}
         <ToastContainer autoClose={2000} />
       </Container>
     );
