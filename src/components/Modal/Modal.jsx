@@ -5,10 +5,6 @@ import { ButtonList, ModalBackdrop, ModalContent } from './Modal.styled';
 const modalRoot = document.querySelector('#modal-root');
 
 export class Modal extends Component {
-  state = {
-    clickedButton: null,
-  };
-
   componentDidMount() {
     document.body.style.overflow = 'hidden';
     window.addEventListener('keydown', this.handleEscapePress);
