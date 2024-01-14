@@ -22,7 +22,7 @@ export const ModalContent = styled.div`
 export const ButtonList = styled.ul`
   display: flex;
   position: absolute;
-  bottom: calc(8vh);
+  bottom: 4px;
   left: 50%;
   transform: translateX(-50%);
   gap: calc(100vw - 80vw);

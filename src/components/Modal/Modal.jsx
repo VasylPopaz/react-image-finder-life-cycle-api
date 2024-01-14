@@ -39,15 +39,15 @@ export class Modal extends Component {
       <ModalBackdrop onClick={this.handleBackdropClick}>
         <ModalContent>
           <img src={urls.full} alt={alt_description} />
+          <ButtonList>
+            <li>
+              <button onClick={this.handleNextImg}>Prev</button>
+            </li>
+            <li>
+              <button onClick={this.handleNextImg}>Next</button>
+            </li>
+          </ButtonList>
         </ModalContent>
-        <ButtonList>
-          <li>
-            <button onClick={this.handleNextImg}>Prev</button>
-          </li>
-          <li>
-            <button onClick={this.handleNextImg}>Next</button>
-          </li>
-        </ButtonList>
       </ModalBackdrop>,
       modalRoot
     );
