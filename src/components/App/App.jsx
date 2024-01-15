@@ -8,7 +8,6 @@ import 'react-toastify/dist/ReactToastify.css';
 export class App extends Component {
   state = {
     images: [],
-    imageUrl: '',
     modalContent: null,
     query: '',
     page: 1,
@@ -72,7 +71,6 @@ export class App extends Component {
       images: [],
       query: searchQuery,
       page: 1,
-      imageUrl: '',
       showLoadMore: false,
     });
   };
