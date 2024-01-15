@@ -7,30 +7,37 @@ const modalRoot = document.querySelector('#modal-root');
 export class Modal extends Component {
   componentDidMount() {
     document.body.style.overflow = 'hidden';
-    window.addEventListener('keydown', this.handleEscapePress);
-    window.addEventListener('keydown', this.handleNextImg);
+    document.addEventListener('keydown', this.handleKeydown);
   }
 
   componentWillUnmount() {
     document.body.style.overflow = 'auto';
-    window.removeEventListener('keydown', this.handleEscapePress);
-    window.removeEventListener('keydown', this.handleNextImg);
+    document.removeEventListener('keydown', this.handleKeydown);
   }
 
-  handleEscapePress = event => {
-    if (event.code === 'Escape') this.props.onClose();
-  };
-
   handleBackdropClick = event => {
-    if (event.currentTarget === event.target) this.props.onClose();
+    const { onClose } = this.props;
+    if (event.target === event.currentTarget) onClose();
   };
 
-  handleNextImg = event => {
-    const { id } = this.props.modalContent;
-    if (event.code === 'ArrowRight' || event.target.textContent === 'Next')
-      this.props.handleNextPhoto(id);
-    if (event.code === 'ArrowLeft' || event.target.textContent === 'Prev')
-      this.props.handlePrevPhoto(id);
+  handleKeydown = event => {
+    const { onClose, handleNextPhoto, handlePrevPhoto, modalContent } =
+      this.props;
+    const { id } = modalContent;
+    const { code } = event;
+
+    if (code === 'Escape') onClose();
+    if (code === 'ArrowRight') handleNextPhoto(id);
+    if (code === 'ArrowLeft') handlePrevPhoto(id);
+  };
+
+  handleSwitchImg = event => {
+    const { handleNextPhoto, handlePrevPhoto, modalContent } = this.props;
+    const { id } = modalContent;
+    const { textContent } = event.target;
+
+    if (textContent === 'Next >') handleNextPhoto(id);
+    if (textContent === '< Prev') handlePrevPhoto(id);
   };
 
   render() {
@@ -41,10 +48,10 @@ export class Modal extends Component {
           <img src={urls.full} alt={alt_description} />
           <ButtonList>
             <li>
-              <button onClick={this.handleNextImg}>Prev</button>
+              <button onClick={this.handleSwitchImg}>&lt; Prev</button>
             </li>
             <li>
-              <button onClick={this.handleNextImg}>Next</button>
+              <button onClick={this.handleSwitchImg}>Next &gt;</button>
             </li>
           </ButtonList>
         </ModalContent>
